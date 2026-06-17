@@ -438,9 +438,75 @@ elif page == "Recommendation Search":
 
 elif page == "Repository":
 
-    st.header("Recommendation Repository")
+    st.header("📚 Historical Recommendation Repository")
+
+    dept_filter = st.multiselect(
+        "Department",
+        sorted(df["PIR_DEPARTMENT"].dropna().unique())
+    )
+
+    type_filter = st.multiselect(
+        "Recommendation Type",
+        sorted(df["Recommendation Type"].dropna().unique())
+    )
+
+    process_filter = st.multiselect(
+        "Process",
+        sorted(df["PIR_PROCESS"].dropna().unique())
+    )
+
+    search_text = st.text_input(
+        "Search Recommendation"
+    )
+
+    filtered_df = df.copy()
+
+    if dept_filter:
+        filtered_df = filtered_df[
+            filtered_df["PIR_DEPARTMENT"].isin(
+                dept_filter
+            )
+        ]
+
+    if type_filter:
+        filtered_df = filtered_df[
+            filtered_df["Recommendation Type"].isin(
+                type_filter
+            )
+        ]
+
+    if process_filter:
+        filtered_df = filtered_df[
+            filtered_df["PIR_PROCESS"].isin(
+                process_filter
+            )
+        ]
+
+    if search_text:
+
+        filtered_df = filtered_df[
+            filtered_df["PIR_RECO_DESC"]
+            .astype(str)
+            .str.contains(
+                search_text,
+                case=False,
+                na=False
+            )
+        ]
+
+    st.write(
+        f"Records Found: {len(filtered_df)}"
+    )
 
     st.dataframe(
-        df,
+        filtered_df[
+            [
+                "PIR_DEPARTMENT",
+                "PIR_PROCESS",
+                "PIR_TYPE_OF_INC",
+                "Recommendation Type",
+                "PIR_RECO_DESC"
+            ]
+        ],
         use_container_width=True
     )
