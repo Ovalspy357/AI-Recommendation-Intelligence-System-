@@ -411,10 +411,10 @@ elif page == "Recommendation Search":
                       df.iloc[idx]["PIR_RECO_DESC"]
                  )
 
-         else:
+             else:
 
-            st.warning(
-                "Please enter text"
+                 st.warning(
+                      "Please enter text"
             )
 
 # ==================================================
