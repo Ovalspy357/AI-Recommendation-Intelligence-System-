@@ -396,9 +396,7 @@ elif page == "Recommendation Search":
 
                 st.markdown("---")
 
-                st.write(
-                    f"### Similarity : {round(similarity[idx]*100,2)} %"
-                )
+                st.markdown("### Similar Historical Learning")
 
                 st.write(
                     f"**Department:** {df.iloc[idx]['PIR_DEPARTMENT']}"
