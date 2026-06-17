@@ -1,12 +1,21 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+
+# --------------------------------------------------
+# PAGE CONFIG
+# --------------------------------------------------
 
 st.set_page_config(
-page_title="AI Recommendation Intelligence System",
-page_icon="🛡️",
-layout="wide"
+    page_title="AI Recommendation Intelligence System",
+    page_icon="🛡️",
+    layout="wide"
 )
+
+# --------------------------------------------------
+# LOAD DATA
+# --------------------------------------------------
 
 @st.cache_data
 def load_data():
@@ -17,7 +26,9 @@ def load_data():
 
 df = load_data()
 
-import plotly.express as px
+# --------------------------------------------------
+# TITLE
+# --------------------------------------------------
 
 st.title("🛡️ AI Recommendation Intelligence System")
 
@@ -26,6 +37,10 @@ st.markdown(
 Transforming historical incident learnings into actionable safety recommendations using AI.
 """
 )
+
+# --------------------------------------------------
+# SIDEBAR
+# --------------------------------------------------
 
 page = st.sidebar.radio(
     "Navigation",
@@ -37,62 +52,80 @@ page = st.sidebar.radio(
     ]
 )
 
+# ==================================================
 # HOME PAGE
+# ==================================================
 
 if page == "Home":
 
     st.header("Safety Recommendation Intelligence Hub")
 
-    # KPI SECTION
+    # ---------------- KPI SECTION ----------------
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5, c6 = st.columns(6)
 
-    with c1:
-        st.metric(
-            "Recommendations",
-            len(df)
+    c1.metric(
+        "Records",
+        len(df)
+    )
+
+    c2.metric(
+        "Design",
+        len(
+            df[
+                df["Recommendation Type"] == "Design"
+            ]
         )
+    )
 
-    with c2:
-        st.metric(
-            "Design",
-            len(df[df["Recommendation Type"]=="Design"])
+    c3.metric(
+        "Other",
+        len(
+            df[
+                df["Recommendation Type"] == "Other"
+            ]
         )
+    )
 
-    with c3:
-        st.metric(
-            "Other",
-            len(df[df["Recommendation Type"]=="Other"])
-        )
+    c4.metric(
+        "Departments",
+        df["PIR_DEPARTMENT"].nunique()
+    )
 
-    with c4:
-        st.metric(
-            "Processes",
-            df["PIR_PROCESS"].nunique()
-        )
+    c5.metric(
+        "Processes",
+        df["PIR_PROCESS"].nunique()
+    )
 
-    # ROW 1
+    c6.metric(
+        "Incident Types",
+        df["PIR_TYPE_OF_INC"].nunique()
+    )
+
+    st.divider()
+
+    # ---------------- ROW 1 ----------------
 
     col1, col2 = st.columns(2)
 
     with col1:
 
-        pie = (
+        pie_data = (
             df["Recommendation Type"]
             .value_counts()
             .reset_index()
         )
 
-        pie.columns = [
+        pie_data.columns = [
             "Type",
             "Count"
         ]
 
         fig = px.pie(
-            pie,
-            values="Count",
+            pie_data,
             names="Type",
-            hole=0.6,
+            values="Count",
+            hole=0.65,
             title="Recommendation Distribution"
         )
 
@@ -113,7 +146,7 @@ if page == "Home":
             x=dept.values,
             y=dept.index,
             orientation="h",
-            title="Top Departments"
+            title="Top 10 Departments"
         )
 
         st.plotly_chart(
@@ -121,39 +154,150 @@ if page == "Home":
             use_container_width=True
         )
 
-    # ROW 2
+    # ---------------- ROW 2 ----------------
 
-    process = (
-        df["PIR_PROCESS"]
-        .value_counts()
-        .head(10)
+    col3, col4 = st.columns(2)
+
+    with col3:
+
+        process = (
+            df["PIR_PROCESS"]
+            .value_counts()
+            .head(10)
+        )
+
+        fig3 = px.bar(
+            x=process.values,
+            y=process.index,
+            orientation="h",
+            title="Top 10 Processes"
+        )
+
+        st.plotly_chart(
+            fig3,
+            use_container_width=True
+        )
+
+    with col4:
+
+        incident = (
+            df["PIR_TYPE_OF_INC"]
+            .value_counts()
+            .head(10)
+        )
+
+        fig4 = px.bar(
+            x=incident.values,
+            y=incident.index,
+            orientation="h",
+            title="Top 10 Incident Types"
+        )
+
+        st.plotly_chart(
+            fig4,
+            use_container_width=True
+        )
+
+    # ---------------- ROW 3 ----------------
+
+    design_df = df[
+        df["Recommendation Type"] == "Design"
+    ]
+
+    col5, col6 = st.columns(2)
+
+    with col5:
+
+        design_dept = (
+            design_df["PIR_DEPARTMENT"]
+            .value_counts()
+            .head(10)
+        )
+
+        fig5 = px.bar(
+            x=design_dept.values,
+            y=design_dept.index,
+            orientation="h",
+            title="Design Recommendations by Department"
+        )
+
+        st.plotly_chart(
+            fig5,
+            use_container_width=True
+        )
+
+    with col6:
+
+        design_incident = (
+            design_df["PIR_TYPE_OF_INC"]
+            .value_counts()
+            .head(10)
+        )
+
+        fig6 = px.bar(
+            x=design_incident.values,
+            y=design_incident.index,
+            orientation="h",
+            title="Design Recommendations by Incident Type"
+        )
+
+        st.plotly_chart(
+            fig6,
+            use_container_width=True
+        )
+
+    # ---------------- ROW 4 ----------------
+
+    st.subheader(
+        "Historical Recommendation Repository Preview"
     )
 
-    fig3 = px.bar(
-        x=process.index,
-        y=process.values,
-        title="Top Processes"
-    )
-
-    st.plotly_chart(
-        fig3,
+    st.dataframe(
+        df[
+            [
+                "PIR_PROCESS",
+                "PIR_TYPE_OF_INC",
+                "PIR_DEPARTMENT",
+                "Recommendation Type",
+                "PIR_RECO_DESC"
+            ]
+        ].head(25),
         use_container_width=True
     )
 
-# AI CLASSIFIER
+# ==================================================
+# AI CLASSIFIER PAGE
+# ==================================================
 
 elif page == "AI Classifier":
 
     st.header("AI Recommendation Classifier")
 
-# SEARCH
+    st.info(
+        "Model integration will be added next."
+    )
+
+# ==================================================
+# SEARCH PAGE
+# ==================================================
 
 elif page == "Recommendation Search":
 
     st.header("Similar Recommendation Search")
 
-# REPOSITORY
+    st.info(
+        "Similarity search will be added next."
+    )
+
+# ==================================================
+# REPOSITORY PAGE
+# ==================================================
 
 elif page == "Repository":
 
     st.header("Recommendation Repository")
+
+    st.dataframe(
+        df,
+        use_container_width=True
+    )
