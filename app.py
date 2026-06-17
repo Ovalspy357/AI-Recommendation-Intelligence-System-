@@ -28,15 +28,29 @@ def load_data():
 
 df = load_data()
 
-# Similarity Search Database
+import joblib
 
-search_text = (
-    df["PIR_INC_DESC"].fillna("") +
-    " " +
-    df["PIR_RECO_DESC"].fillna("")
+# Load Model & Vectorizer
+
+vectorizer = joblib.load(
+    "recommendation_vectorizer.pkl"
 )
 
-search_vector = vectorizer.transform(search_text)
+model = joblib.load(
+    "recommendation_xgb_model.pkl"
+)
+
+# Create Search Database
+
+search_text = (
+    df["PIR_INC_DESC"].fillna("").astype(str)
+    + " "
+    + df["PIR_RECO_DESC"].fillna("").astype(str)
+)
+
+search_vector = vectorizer.transform(
+    search_text
+)
 
 # --------------------------------------------------
 # TITLE
@@ -286,14 +300,6 @@ elif page == "AI Classifier":
     import joblib
 
     st.header("🤖 AI Recommendation Classifier")
-
-    model = joblib.load(
-        "recommendation_xgb_model.pkl"
-    )
-
-    vectorizer = joblib.load(
-        "recommendation_vectorizer.pkl"
-    )
 
     recommendation = st.text_area(
         "Enter Recommendation",
