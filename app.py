@@ -383,39 +383,35 @@ elif page == "Recommendation Search":
 
             for idx in top_indices:
 
-                st.markdown("---")
+                 st.markdown("---")
 
-                st.markdown("### Similar Historical Learning")
+                 st.subheader("Historical Recommendation Match")
 
-                st.write(
-                    f"**Department:** {df.iloc[idx]['PIR_DEPARTMENT']}"
-                )
+                 st.write(
+                      f"Department: {df.iloc[idx]['PIR_DEPARTMENT']}"
+                 )
 
-                st.write(
-                    f"**Process:** {df.iloc[idx]['PIR_PROCESS']}"
-                )
+                 st.write(
+                      f"Process: {df.iloc[idx]['PIR_PROCESS']}"
+                 )
 
-                st.write(
-                    f"**Incident Type:** {df.iloc[idx]['PIR_TYPE_OF_INC']}"
-                )
+                 st.write(
+                      f"Incident Type: {df.iloc[idx]['PIR_TYPE_OF_INC']}"
+                 )
 
-                st.write(
-                    f"**Incident Description:**"
-                )
+                 st.write("Incident Description:")
 
-                st.write(
-                    df.iloc[idx]['PIR_INC_DESC']
-                )
+                 st.write(
+                     df.iloc[idx]["PIR_INC_DESC"]
+                 )
 
-                st.write(
-                    f"**Recommendation:**"
-                )
+                 st.write("Recommendation:")
+     
+                 st.success(
+                      df.iloc[idx]["PIR_RECO_DESC"]
+                 )
 
-                st.success(
-                    df.iloc[idx]['PIR_RECO_DESC']
-                )
-
-        else:
+         else:
 
             st.warning(
                 "Please enter text"
