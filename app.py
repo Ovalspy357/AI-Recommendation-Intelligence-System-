@@ -273,26 +273,61 @@ elif page == "AI Classifier":
 
     import joblib
 
-    st.header("AI Recommendation Classifier")
+    st.header("🤖 AI Recommendation Classifier")
 
-    try:
+    model = joblib.load(
+        "recommendation_xgb_model.pkl"
+    )
 
-        model = joblib.load(
-            "recommendation_xgb_model.pkl"
-        )
+    vectorizer = joblib.load(
+        "recommendation_vectorizer.pkl"
+    )
 
-        vectorizer = joblib.load(
-            "recommendation_vectorizer.pkl"
-        )
+    recommendation = st.text_area(
+        "Enter Recommendation",
+        height=150
+    )
 
-        st.success("Model Loaded Successfully")
+    if st.button("Predict"):
 
-        st.write(type(model))
-        st.write(type(vectorizer))
+        if recommendation.strip() != "":
 
-    except Exception as e:
+            vector = vectorizer.transform(
+                [recommendation]
+            )
 
-        st.error(e)
+            prediction = model.predict(
+                vector
+            )[0]
+
+            probability = model.predict_proba(
+                vector
+            )[0]
+
+            confidence = round(
+                max(probability) * 100,
+                2
+            )
+
+            if prediction == 1:
+                result = "DESIGN"
+            else:
+                result = "OTHER"
+
+            st.success(
+                f"Prediction : {result}"
+            )
+
+            st.metric(
+                "Confidence %",
+                confidence
+            )
+
+        else:
+
+            st.warning(
+                "Please enter recommendation text"
+            )
         
 # ==================================================
 # SEARCH PAGE
