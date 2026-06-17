@@ -10,7 +10,7 @@ layout="wide"
 
 @st.cache_data
 def load_data():
-return pd.read_excel("Divyansh File.xlsx")
+    return pd.read_excel("Divyansh File.xlsx")
 
 df = load_data()
 
