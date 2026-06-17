@@ -381,7 +381,7 @@ elif page == "Recommendation Search":
                 "Top Similar Historical Recommendations"
             )
 
-           for idx in top_indices:
+            for idx in top_indices:
 
                 st.markdown("---")
 
