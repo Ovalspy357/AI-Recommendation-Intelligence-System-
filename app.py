@@ -385,7 +385,9 @@ elif page == "Recommendation Search":
 
                 st.markdown("---")
 
-                st.markdown("### Similar Historical Learning")
+                with st.expander(
+                    f"Historical Recommendation #{rank}"
+                ):
 
                 st.write(
                     f"**Department:** {df.iloc[idx]['PIR_DEPARTMENT']}"
