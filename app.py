@@ -396,8 +396,8 @@ elif page == "Recommendation Search":
 
                 st.markdown("---")
 
-                st.markdown(
-                    "### Similar Historical Learning"
+                st.write(
+                    f"### Similarity : {round(similarity[idx]*100,2)} %"
                 )
 
                 st.write(
