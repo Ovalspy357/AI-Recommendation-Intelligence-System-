@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
 # --------------------------------------------------
@@ -52,6 +53,16 @@ search_vector = vectorizer.transform(
     search_text
 )
 
+search_tfidf = TfidfVectorizer(
+    stop_words="english",
+    ngram_range=(1,2)
+)
+
+search_matrix = search_tfidf.fit_transform(
+    df["PIR_RECO_DESC"]
+    .fillna("")
+    .astype(str)
+)
 # --------------------------------------------------
 # TITLE
 # --------------------------------------------------
@@ -364,13 +375,13 @@ elif page == "Recommendation Search":
 
         if query.strip() != "":
 
-            query_vector = vectorizer.transform(
+            query_vector = search_tfidf.transform(
                 [query]
             )
 
             similarity = cosine_similarity(
                 query_vector,
-                search_vector
+                search_matrix
             )[0]
 
             top_indices = np.argsort(
