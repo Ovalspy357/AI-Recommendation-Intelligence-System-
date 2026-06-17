@@ -364,13 +364,13 @@ elif page == "Recommendation Search":
 
         if query.strip() != "":
 
-            query_vector = vectorizer.transform(
+            query_vector = search_tfidf.transform(
                 [query]
             )
 
             similarity = cosine_similarity(
                 query_vector,
-                search_vector
+                search_matrix
             )[0]
 
             top_indices = np.argsort(
