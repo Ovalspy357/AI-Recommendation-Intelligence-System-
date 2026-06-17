@@ -385,7 +385,8 @@ elif page == "Recommendation Search":
 
                 st.markdown("---")
 
-                st.markdown("### Similar Historical Learning")
+                st.markdown(
+                    "### Similar Historical Learning"
                 )
 
                 st.write(
