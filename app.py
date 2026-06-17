@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 # --------------------------------------------------
 # PAGE CONFIG
@@ -25,6 +27,16 @@ def load_data():
     )
 
 df = load_data()
+
+# Similarity Search Database
+
+search_text = (
+    df["PIR_INC_DESC"].fillna("") +
+    " " +
+    df["PIR_RECO_DESC"].fillna("")
+)
+
+search_vector = vectorizer.transform(search_text)
 
 # --------------------------------------------------
 # TITLE
@@ -335,11 +347,75 @@ elif page == "AI Classifier":
 
 elif page == "Recommendation Search":
 
-    st.header("Similar Recommendation Search")
+    st.header("🔍 Similar Recommendation Search")
 
-    st.info(
-        "Similarity search will be added next."
+    query = st.text_area(
+        "Enter Incident Description or Recommendation",
+        height=150
     )
+
+    if st.button("Find Similar Recommendations"):
+
+        if query.strip() != "":
+
+            query_vector = vectorizer.transform(
+                [query]
+            )
+
+            similarity = cosine_similarity(
+                query_vector,
+                search_vector
+            )[0]
+
+            top_indices = np.argsort(
+                similarity
+            )[-5:][::-1]
+
+            st.subheader(
+                "Top Similar Historical Recommendations"
+            )
+
+            for idx in top_indices:
+
+                st.markdown("---")
+
+                st.write(
+                    f"### Similarity : {round(similarity[idx]*100,2)} %"
+                )
+
+                st.write(
+                    f"**Department:** {df.iloc[idx]['PIR_DEPARTMENT']}"
+                )
+
+                st.write(
+                    f"**Process:** {df.iloc[idx]['PIR_PROCESS']}"
+                )
+
+                st.write(
+                    f"**Incident Type:** {df.iloc[idx]['PIR_TYPE_OF_INC']}"
+                )
+
+                st.write(
+                    f"**Incident Description:**"
+                )
+
+                st.write(
+                    df.iloc[idx]['PIR_INC_DESC']
+                )
+
+                st.write(
+                    f"**Recommendation:**"
+                )
+
+                st.success(
+                    df.iloc[idx]['PIR_RECO_DESC']
+                )
+
+        else:
+
+            st.warning(
+                "Please enter text"
+            )
 
 # ==================================================
 # REPOSITORY PAGE
